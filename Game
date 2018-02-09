@@ -1,4 +1,4 @@
-//Version 1.2
+//Version 1.3
 //The way I coded the catch for used characters only worked for correct letters. I want to expand it to all used characters this time.
 //For next versions, I want to add (random or chosen) word categories
 //
@@ -36,15 +36,28 @@ public class Hangman {
 	
 	public void guess(String s) {
 		String newHiddenWord = "";
-		boolean canContinue = false;
+		Scanner guessAgain = new Scanner(System.in);
+				
+		while(s.length() != 1) {
+			System.out.println("You can only guess 1 letter at a time! Guess again!");
+			s = guessAgain.next();
 			
+		}
+		
+		
+		boolean canContinue = false;
+		
 		while(canContinue == false) {
 			if (alreadyUsed.contains(s)){
 				System.out.println("\nYou already guessed this letter! Guess a new letter! You left off at: "); //return the letters already used? does this add another nested loop?
 				System.out.println(hiddenWord);
-				Scanner guessAgain = new Scanner(System.in);
 				s = guessAgain.next();
 				
+				while(s.length() != 1) {
+					System.out.println("You can only guess 1 letter at a time! Guess again!");
+					s = guessAgain.next();
+									
+					}
 				}
 			else {
 				canContinue = true;
@@ -75,7 +88,7 @@ public class Hangman {
 			drawMan();									
 		} else {
 			System.out.println("\nCorrect. There is a " + s.charAt(0) + ".");
-			hiddenWord = newHiddenWord;               //updates hiddenWord
+			hiddenWord = newHiddenWord;					//updates hiddenWord
 		}
 		if (hiddenWord.equals(letsPlay)) {
 			System.out.println("Nice job! You win! The word was " + letsPlay);
@@ -84,7 +97,7 @@ public class Hangman {
 		
 	}
 	 
-	
+		
 	private void drawMan() {
 		
 		
