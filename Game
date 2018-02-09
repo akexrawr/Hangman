@@ -1,0 +1,158 @@
+//Version 1.2
+//The way I coded the catch for used characters only worked for correct letters. I want to expand it to all used characters this time.
+//For next versions, I want to add (random or chosen) word categories
+//
+//Disallow guessing more than one letter. Str.length() != 1?
+//Move wrongAnswer ++ into guess method?
+//Add formatting?
+
+package Hangman;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Hangman {
+
+	private static int wrongAnswer = 0;
+	private static String[] wordList = new String[] { "apple", "banana", "orange", "grapefruit", "kiwi"};
+	private static String letsPlay = wordList[(int)Math.floor(Math.random()*wordList.length)]; //should return an index between 0 and (wordList.length -1) inclusive
+	private static String hiddenWord = new String(new char[letsPlay.length()]).replace("\0", "*");
+	private static ArrayList<String> alreadyUsed = new ArrayList<String>();	//**Use a list because the length of an array is immutable in Java
+	
+	public static void main(String[] args) {
+		Hangman gameInstance = new Hangman();
+		Scanner userInput = new Scanner(System.in);
+		
+		System.out.println("Word has been selected. Let's play! Your word is " + letsPlay.length() + " letters long." ); //later i will add word categories and randomize those
+		
+		while (wrongAnswer < 6 && hiddenWord.contains("*")) {
+			System.out.println("Guess any letter in the word.");
+			System.out.println(hiddenWord);
+			gameInstance.guess(userInput.next());
+		}
+			
+			userInput.close();
+	}
+	
+	public void guess(String s) {
+		String newHiddenWord = "";
+		boolean canContinue = false;
+			
+		while(canContinue == false) {
+			if (alreadyUsed.contains(s)){
+				System.out.println("\nYou already guessed this letter! Guess a new letter! You left off at: "); //return the letters already used? does this add another nested loop?
+				System.out.println(hiddenWord);
+				Scanner guessAgain = new Scanner(System.in);
+				s = guessAgain.next();
+				
+				}
+			else {
+				canContinue = true;
+				}
+			}
+				
+		for (int i = 0; i < hiddenWord.length(); i++) { 
+			/*if (hiddenWord.charAt(i) == s.charAt(0)) {	//First we check if a correct letter has already been guessed. If so, we prompt the user for a new guess.
+				System.out.println("You already guessed this letter! Guess a new letter!");
+				System.out.println(hiddenWord);
+				Scanner guessAgain = new Scanner(System.in);
+				s = guessAgain.next();
+			}*/
+		
+			if (letsPlay.charAt(i) == s.charAt(0)) {	//Next we check if the guessed letter is at that index
+				newHiddenWord += s.charAt(0);			//ex. **a** 
+			} else if (hiddenWord.charAt(i) != '*') {	//if this letter has been guessed correctly before, it will no longer be an asterisk in hiddenWord variable
+				newHiddenWord += letsPlay.charAt(i);	//therefore we replace it with the already guessed variable 
+			} else {
+				newHiddenWord += "*";					//letter hasn't been guessed yet, so leave the asterisk
+			}
+		}
+
+		alreadyUsed.add(s);
+		
+		if (hiddenWord.equals(newHiddenWord)) {			//aka correct letter wasn't guessed, so hiddenWord wasn't changed
+			wrongAnswer++;
+			drawMan();									
+		} else {
+			System.out.println("\nCorrect. There is a " + s.charAt(0) + ".");
+			hiddenWord = newHiddenWord;               //updates hiddenWord
+		}
+		if (hiddenWord.equals(letsPlay)) {
+			System.out.println("Nice job! You win! The word was " + letsPlay);
+		}
+		
+		
+	}
+	 
+	
+	private void drawMan() {
+		
+		
+		switch(wrongAnswer) {
+		case 1: System.out.println("Wrong answer. You have 5 guesses remaining." );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" O  |" );
+				System.out.println("    |" );
+				System.out.println("    |" );
+				System.out.println("    |" );
+				System.out.println("   _|_" );
+				break;
+		case 2: System.out.println("Wrong answer. You have 4 guesses remaining." );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" O  |" );
+				System.out.println(" |  |" );
+				System.out.println("    |" );
+				System.out.println("    |" );
+				System.out.println("   _|_" );
+				break;
+		case 3: System.out.println("Wrong answer. You have 3 guesses remaining." );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" O  |" );
+				System.out.println("/|  |" );
+				System.out.println("    |" );
+				System.out.println("    |" );
+				System.out.println("   _|_" );
+				break;
+		case 4: System.out.println("Wrong answer. You have 2 guesses remaining." );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" O  |" );
+				System.out.println("/|\\ |" );
+				System.out.println("    |" );
+				System.out.println("    |" );
+				System.out.println("   _|_" );
+				break;
+		case 5: System.out.println("Wrong answer. You have 1 guesses remaining." );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" O  |" );
+				System.out.println("/|\\ |" );
+				System.out.println("/   |" );
+				System.out.println("    |" );
+				System.out.println("   _|_" );
+				break;
+		case 6: System.out.println("Wrong answer. You're out of guesses! Game over! :(" );
+				System.out.println("");
+				System.out.println("-----" );
+				System.out.println(" |  |" );
+				System.out.println(" |  |" );
+				System.out.println(" O  |" );
+				System.out.println("/|\\ |" );
+				System.out.println("/ \\_|_" );
+				break;
+			
+			//gameover
+				
+		
+		
+		
+		}
+		
+		
+		
+	}
+	
+}
