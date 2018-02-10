@@ -1,14 +1,17 @@
-//Version 1.2
-//The way I coded the catch for used characters only worked for correct letters. I want to expand it to all used characters this time.
-//For next versions, I want to add (random or chosen) word categories
+//Version 1.3
+//Changed how hiddenWord is generated
+//Added support for capital letters
+//Prevent users from inputting non-alphabet strings
 //
-//Disallow guessing more than one letter. Str.length() != 1?
-//Move wrongAnswer ++ into guess method?
+//For next versions, I want to add (random or chosen) word categories
 //Add formatting?
+//
+
 
 package Hangman;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Hangman {
@@ -16,35 +19,59 @@ public class Hangman {
 	private static int wrongAnswer = 0;
 	private static String[] wordList = new String[] { "apple", "banana", "orange", "grapefruit", "kiwi"};
 	private static String letsPlay = wordList[(int)Math.floor(Math.random()*wordList.length)]; //should return an index between 0 and (wordList.length -1) inclusive
-	private static String hiddenWord = new String(new char[letsPlay.length()]).replace("\0", "*");
+	private static String hiddenWord;
 	private static ArrayList<String> alreadyUsed = new ArrayList<String>();	//**Use a list because the length of an array is immutable in Java
 	
+		
 	public static void main(String[] args) {
 		Hangman gameInstance = new Hangman();
 		Scanner userInput = new Scanner(System.in);
 		
 		System.out.println("Word has been selected. Let's play! Your word is " + letsPlay.length() + " letters long." ); //later i will add word categories and randomize those
+		char[] buildWord = new char[letsPlay.length()];
+		Arrays.fill(buildWord, '*');
+		hiddenWord = new String(buildWord);	//converting char array to string
 		
 		while (wrongAnswer < 6 && hiddenWord.contains("*")) {
 			System.out.println("Guess any letter in the word.");
 			System.out.println(hiddenWord);
-			gameInstance.guess(userInput.next());
+			gameInstance.guess(userInput.next().toLowerCase());
 		}
 			
 			userInput.close();
+			
 	}
 	
 	public void guess(String s) {
 		String newHiddenWord = "";
-		boolean canContinue = false;
+		Scanner guessAgain = new Scanner(System.in);
+		
+		while(!s.matches("[A-Za-z]+")) {	//used regex to check that the string created by the scanner is alphabetical
+			System.out.println("Invalid character. Alphabetical letters only.");
+			s = guessAgain.next().toLowerCase();
+		
+		}
+		
+		while(s.length() != 1) {
+			System.out.println("You can only guess 1 letter at a time! Guess again!");
+			s = guessAgain.next().toLowerCase();
 			
+		}
+		
+		
+		boolean canContinue = false;
+		
 		while(canContinue == false) {
 			if (alreadyUsed.contains(s)){
 				System.out.println("\nYou already guessed this letter! Guess a new letter! You left off at: "); //return the letters already used? does this add another nested loop?
 				System.out.println(hiddenWord);
-				Scanner guessAgain = new Scanner(System.in);
-				s = guessAgain.next();
+				s = guessAgain.next().toLowerCase();
 				
+				while(s.length() != 1) {
+					System.out.println("You can only guess 1 letter at a time! Guess again!");
+					s = guessAgain.next().toLowerCase();
+									
+					}
 				}
 			else {
 				canContinue = true;
@@ -75,16 +102,17 @@ public class Hangman {
 			drawMan();									
 		} else {
 			System.out.println("\nCorrect. There is a " + s.charAt(0) + ".");
-			hiddenWord = newHiddenWord;               //updates hiddenWord
+			hiddenWord = newHiddenWord;					//updates hiddenWord
 		}
 		if (hiddenWord.equals(letsPlay)) {
 			System.out.println("Nice job! You win! The word was " + letsPlay);
 		}
 		
 		
+		
 	}
 	 
-	
+		
 	private void drawMan() {
 		
 		
